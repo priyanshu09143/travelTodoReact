@@ -1,17 +1,28 @@
 import { useState } from "react";
 import "./styles.css";
 
-const initialItems = [
+
+let initialItems = [
   { id: 1, description: "Passports", quantity: 2, packed: false },
-  { id: 2, description: "Socks", quantity: 12, packed: true }
+  { id: 2, description: "Socks", quantity: 12, packed: true },
+  
 ];
 
 export default function App() {
+  let [desc, setDesc] = useState("");
+  let [list , setLists] = useState([...initialItems])
+ 
   return (
     <div className="App">
       <Header />
-      <Form />
-      <PackingList />
+      <Form 
+      list = {list}
+        setLists ={setLists}
+        setDesc = {setDesc}
+        desc = {desc}
+        />
+      <PackingList 
+      list ={list}/>
       <Stats />
     </div>
   );
@@ -20,9 +31,18 @@ export default function App() {
 function Header() {
   return <h1> 🏝 Far Away 🧳 </h1>;
 }
+function Form({ desc, setDesc, list, setLists }) {
+  console.log(list);
 
-function Form() {
-  let [desc, setDesc] = useState("");
+  function AddInList(e) {
+    e.preventDefault();
+    let dictionary = {};
+    dictionary.id = list.length + 1; // Use the length of the current 'list' state to calculate the new ID
+    dictionary.description = desc;
+    dictionary.quantity = Number(document.querySelector("select").value);
+    dictionary.packed = false;
+    setLists([...list, dictionary]); // Use 'list' instead of 'initialItems'
+  }
 
   return (
     <form className="add-form">
@@ -45,16 +65,19 @@ function Form() {
           setDesc(e.target.value);
         }}
       ></input>
-      <button>ADD</button>
+      <button onClick={AddInList}>ADD</button>
     </form>
   );
 }
 
-function PackingList() {
+
+
+
+function PackingList({list}) {
   return (
     <div className="list">
       <ul>
-        {initialItems.map((eItem) => {
+        {list.map((eItem) => {
           return <Item item={eItem} />;
         })}
       </ul>
